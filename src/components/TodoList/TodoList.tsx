@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TaskInput from "../TaskInput"
 import TaskList from "../TaskList"
 import styles from "./todoList.module.scss"
@@ -9,6 +9,12 @@ export default function TodoList() {
   const doneTodos = todos.filter(todos => todos.done)
   const notDoneTodos = todos.filter(todo => !todo.done)
 
+  useEffect(() => {
+    const todoString = localStorage.getItem('todos')
+    const todoObj = JSON.parse(todoString || '[]')
+    setTodos(todoObj)
+  }, [])
+
   const addTodo = (name: string) => {
     const todo: Todo = {
       id: new Date().toISOString(),
@@ -16,6 +22,11 @@ export default function TodoList() {
       done: false,
     }
     setTodos((prev)=> [...prev, todo])
+
+    const todoString = localStorage.getItem('todos')
+    const todoObj = JSON.parse(todoString || '[]')
+    const newTodoObj = [...todoObj, todo]
+    localStorage.setItem('todos', JSON.stringify(newTodoObj))
   }
 
   //This status is the status of the checkbox
@@ -56,6 +67,16 @@ export default function TodoList() {
       })
     })
     setCurrentTodo(null)
+
+    const todoString = localStorage.getItem('todos')
+    const todoObj: Todo[] = JSON.parse(todoString || '[]')
+    const newTodoObj = todoObj.map( todo => {
+      if (todo.id === (currentTodo as Todo).id){
+        return currentTodo as Todo
+      }
+      return todo
+    })
+    localStorage.setItem('todos', JSON.stringify(newTodoObj))
   }
 
   const deleteTodo = (id: string) => {

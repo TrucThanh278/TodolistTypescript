@@ -58,24 +58,22 @@ export default function TodoList() {
   }
 
   const finishEditTodo = () =>{
-    setTodos(prev => {
-      return prev.map(todo => {
+    const handler = (todoObj : Todo[]) => {
+      return todoObj.map(todo => {
         if (todo.id === (currentTodo as Todo).id) {
           return currentTodo as Todo
         }
         return todo
       })
-    })
+    }
+
+
+    setTodos(handler)
     setCurrentTodo(null)
 
     const todoString = localStorage.getItem('todos')
     const todoObj: Todo[] = JSON.parse(todoString || '[]')
-    const newTodoObj = todoObj.map( todo => {
-      if (todo.id === (currentTodo as Todo).id){
-        return currentTodo as Todo
-      }
-      return todo
-    })
+    const newTodoObj = handler(todoObj)
     localStorage.setItem('todos', JSON.stringify(newTodoObj))
   }
 
